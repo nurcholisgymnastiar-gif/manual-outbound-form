@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Manual Outbound Request — Tentang Anak</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #f7f6f3;
+    --surface: #ffffff;
+    --border: #e4e2db;
+    --border-focus: #a0a09a;
+    --text: #1a1a18;
+    --text-muted: #6b6b66;
+    --text-hint: #9b9b94;
+    --accent: #2d6a4f;
+    --accent-light: #e8f5ef;
+    --danger: #c0392b;
+    --danger-light: #fdf0ee;
+    --success: #2d6a4f;
+    --success-light: #e8f5ef;
+    --info-light: #eef4fb;
+    --info: #1a5fa8;
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+  body {
+    font-family: -apple-system, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 2rem 1rem 4rem;
+  }
+  .container { max-width: 580px; margin: 0 auto; }
+  .logo-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 2rem; }
+  .logo-dot {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-weight: 700; font-size: 14px;
+  }
+  .logo-name { font-size: 14px; font-weight: 600; color: var(--text-muted); }
+  .page-title { font-size: 22px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+  .page-subtitle { font-size: 14px; color: var(--text-muted); margin-bottom: 1.75rem; line-height: 1.5; }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1rem;
+  }
+  .section-label {
+    font-size: 10.5px; font-weight: 600; letter-spacing: 0.07em;
+    text-transform: uppercase; color: var(--text-hint); margin-bottom: 1rem;
+  }
+  .field { margin-bottom: 1rem; }
+  .field:last-child { margin-bottom: 0; }
+  label { display: block; font-size: 13px; font-weight: 500; color: var(--text-muted); margin-bottom: 6px; }
+  label .req { color: var(--danger); margin-left: 2px; }
+  input, select, textarea {
+    width: 100%; padding: 9px 12px;
+    font-size: 14px; font-family: inherit;
+    background: var(--surface); color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    outline: none; transition: border-color 0.15s;
+    appearance: none; -webkit-appearance: none;
+  }
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b6b66' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px rgba(45,106,79,0.08);
+  }
+  textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .armada-note {
+    background: var(--info-light); border: 1px solid #c3d9f0;
+    border-radius: var(--radius-sm); padding: 10px 12px;
+    font-size: 12.5px; color: var(--info); line-height: 1.6;
+    margin-top: 10px; display: none;
+  }
+  .armada-note strong { font-weight: 600; }
+  .btn {
+    width: 100%; padding: 11px;
+    font-size: 14px; font-weight: 600; font-family: inherit;
+    background: var(--accent); color: white;
+    border: none; border-radius: var(--radius-sm);
+    cursor: pointer; transition: opacity 0.15s, transform 0.1s;
+    margin-top: 0.5rem;
+  }
+  .btn:hover { opacity: 0.88; }
+  .btn:active { transform: scale(0.98); }
+  .btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+  .status {
+    font-size: 13px; padding: 11px 14px;
+    border-radius: var(--radius-sm); margin-top: 12px;
+    display: none; line-height: 1.5;
+  }
+  .status.loading { background: var(--info-light); color: var(--info); border: 1px solid #c3d9f0; }
+  .status.success { background: var(--success-light); color: var(--success); border: 1px solid #a8d5bb; }
+  .status.error { background: var(--danger-light); color: var(--danger); border: 1px solid #f0c0ba; }
+  .footer { text-align: center; font-size: 12px; color: var(--text-hint); margin-top: 2rem; }
+  @media (max-width: 480px) { .row { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="logo-bar">
+    <div class="logo-dot">TA</div>
+    <span class="logo-name">Tentang Anak</span>
+  </div>
+  <h1 class="page-title">Manual outbound request</h1>
+  <p class="page-subtitle">Submit a request to withdraw products from inventory. Data will be recorded directly in the CS tracking sheet.</p>
+
+  <div class="card">
+    <p class="section-label">Requester info</p>
+    <div class="field">
+      <label>Requester name <span class="req">*</span></label>
+      <input type="text" id="requester_name" placeholder="e.g. Budi Santoso" />
+    </div>
+    <div class="row">
+      <div class="field">
+        <label>Division <span class="req">*</span></label>
+        <select id="division">
+          <option value="">Select division...</option>
+          <option>Brand</option>
+          <option>Commerce</option>
+          <option>Community</option>
+          <option>People</option>
+          <option>Tech</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Request date <span class="req">*</span></label>
+        <input type="date" id="request_date" />
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="section-label">Product details</p>
+    <div class="field">
+      <label>SKU / Product name <span class="req">*</span></label>
+      <input type="text" id="sku" placeholder="e.g. SKU-001 / Vitamin C 500mg" />
+    </div>
+    <div class="row">
+      <div class="field">
+        <label>Quantity <span class="req">*</span></label>
+        <input type="number" id="quantity" placeholder="0" min="1" />
+      </div>
+      <div class="field">
+        <label>Unit</label>
+        <select id="unit">
+          <option value="">Select...</option>
+          <option>pcs</option>
+          <option>box</option>
+          <option>carton</option>
+          <option>kg</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="section-label">Delivery info</p>
+    <div class="field">
+      <label>Destination address <span class="req">*</span></label>
+      <textarea id="destination" placeholder="Full address including city and postal code"></textarea>
+    </div>
+    <div class="row">
+      <div class="field">
+        <label>Area</label>
+        <select id="area" onchange="updateArmadaNote()">
+          <option value="">Select...</option>
+          <option>Jabodetabek</option>
+          <option>Non-Jabodetabek</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Urgency</label>
+        <select id="urgency" onchange="updateArmadaNote()">
+          <option value="">Select...</option>
+          <option>Urgent (same day)</option>
+          <option>Normal</option>
+        </select>
+      </div>
+    </div>
+    <div class="armada-note" id="armada_note"></div>
+    <div class="field" style="margin-top:1rem">
+      <label>Notes</label>
+      <input type="text" id="notes" placeholder="Any additional info..." />
+    </div>
+  </div>
+
+  <button class="btn" id="submitBtn" onclick="submitForm()">Submit request</button>
+  <div class="status" id="statusMsg"></div>
+  <p class="footer">Tentang Anak · Internal use only</p>
+</div>
+
+<script>
+document.getElementById('request_date').valueAsDate = new Date();
+
+function updateArmadaNote() {
+  const area = document.getElementById('area').value;
+  const urgency = document.getElementById('urgency').value;
+  const note = document.getElementById('armada_note');
+  if (!area || !urgency) { note.style.display = 'none'; return; }
+  let rec = '';
+  if (area === 'Non-Jabodetabek') rec = '<strong>Recommended logistics:</strong> JNE';
+  else if (urgency === 'Urgent (same day)') rec = '<strong>Recommended logistics:</strong> Lalamove (same-day)';
+  else rec = '<strong>Recommended logistics:</strong> JNE (standard delivery)';
+  note.innerHTML = rec;
+  note.style.display = 'block';
+}
+
+async function submitForm() {
+  const f = {
+    requester_name: document.getElementById('requester_name').value.trim(),
+    division: document.getElementById('division').value,
+    request_date: document.getElementById('request_date').value,
+    sku: document.getElementById('sku').value.trim(),
+    quantity: document.getElementById('quantity').value,
+    unit: document.getElementById('unit').value,
+    destination: document.getElementById('destination').value.trim(),
+    area: document.getElementById('area').value,
+    urgency: document.getElementById('urgency').value,
+    notes: document.getElementById('notes').value.trim(),
+    submitted_at: new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' })
+  };
+
+  const required = ['requester_name','division','request_date','sku','quantity','destination'];
+  if (required.some(k => !f[k])) {
+    showStatus('error', 'Please fill in all required fields marked with *.');
+    return;
+  }
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = 'Sending...';
+  showStatus('loading', 'Sending your request to Lark Sheet...');
+
+  try {
+    const res = await fetch('/api/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(f)
+    });
+    const json = await res.json();
+    if (!res.ok || !json.success) throw new Error(json.error || 'Unknown error');
+
+    showStatus('success', 'Request submitted! Your data has been recorded in the CS sheet.');
+    btn.textContent = 'Submit another request';
+    btn.disabled = false;
+    btn.onclick = resetForm;
+  } catch(e) {
+    showStatus('error', 'Submission failed: ' + e.message + '. Please try again or contact your admin.');
+    btn.disabled = false;
+    btn.textContent = 'Submit request';
+  }
+}
+
+function resetForm() {
+  ['requester_name','sku','destination','notes'].forEach(id => document.getElementById(id).value = '');
+  ['division','unit','area','urgency'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('quantity').value = '';
+  document.getElementById('request_date').valueAsDate = new Date();
+  document.getElementById('armada_note').style.display = 'none';
+  document.getElementById('statusMsg').style.display = 'none';
+  const btn = document.getElementById('submitBtn');
+  btn.textContent = 'Submit request';
+  btn.onclick = submitForm;
+}
+
+function showStatus(type, msg) {
+  const el = document.getElementById('statusMsg');
+  el.className = 'status ' + type;
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+</script>
+</body>
+</html>
